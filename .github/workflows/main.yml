@@ -1,0 +1,33 @@
+name: Promote TEST to PROD
+
+on:
+  workflow_dispatch: # زر Run workflow فقط
+
+permissions:
+  contents: write  # أقل صلاحية ممكنة لعمل Release
+
+jobs:
+  promote:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Download TEST release assets
+        run: |
+          mkdir testassets
+          gh release download test --dir testassets
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Delete old PROD release
+        run: |
+          gh release delete prod -y || true
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Create new PROD release
+        run: |
+          gh release create prod testassets/* \
+            --title "PROD Release" \
+            --notes "Promoted from TEST"
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
