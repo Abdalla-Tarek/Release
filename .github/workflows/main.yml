@@ -1,16 +1,19 @@
 name: Promote TEST to PROD
 
 on:
-  workflow_dispatch: # زر Run workflow فقط
+  workflow_dispatch:
 
 permissions:
-  contents: write  # أقل صلاحية ممكنة لعمل Release
+  contents: write
 
 jobs:
   promote:
     runs-on: ubuntu-latest
 
     steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
       - name: Download TEST release assets
         run: |
           mkdir testassets
